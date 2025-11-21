@@ -20,10 +20,9 @@ import {
 interface ResumeAnalysisProps {
   candidateId: string
   jobId: string
-  onAnalysisComplete?: (analysis: any) => void
 }
 
-export function ResumeAnalysis({ candidateId, jobId, onAnalysisComplete }: ResumeAnalysisProps) {
+export function ResumeAnalysis({ candidateId, jobId }: ResumeAnalysisProps) {
   const [resumeText, setResumeText] = useState('')
   const [analysis, setAnalysis] = useState<any>(null)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
@@ -58,7 +57,6 @@ export function ResumeAnalysis({ candidateId, jobId, onAnalysisComplete }: Resum
       }
 
       setAnalysis(data.analysis)
-      onAnalysisComplete?.(data.analysis)
 
     } catch (err: any) {
       setError(err.message || '分析过程中出现错误')

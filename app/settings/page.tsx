@@ -1,3 +1,5 @@
+'use client'
+
 import { Sidebar } from '@/components/sidebar'
 import { PageHeader } from '@/components/page-header'
 import { AIAssistant } from '@/components/ai-assistant'
@@ -6,8 +8,24 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { LinkIcon, SettingsIcon } from 'lucide-react'
 import Link from 'next/link'
+import { useState } from 'react'
 
 export default function SettingsPage() {
+  const [emailNotifications, setEmailNotifications] = useState(true)
+  const [autoArchive, setAutoArchive] = useState(false)
+  const [weeklyReports, setWeeklyReports] = useState(true)
+  
+  const handleBindAccount = (platform: string) => {
+    // Mock successful binding - in real app, this would integrate with external APIs
+    console.log(`Binding ${platform} account...`)
+    alert(`${platform} 账号绑定成功！`)
+  }
+  
+  const handleSaveSettings = () => {
+    // Mock save success - in real app, this would save to backend
+    console.log('Saving settings...', { emailNotifications, autoArchive, weeklyReports })
+    alert('设置保存成功！')
+  }
   return (
     <div className="flex h-screen bg-background">
       <Sidebar />
@@ -50,7 +68,7 @@ export default function SettingsPage() {
                   </div>
                   <div className="flex items-center gap-3">
                     <Badge variant="outline">未绑定</Badge>
-                    <Button variant="outline">绑定账号</Button>
+                    <Button variant="outline" onClick={() => handleBindAccount('BOSS 直聘')}>绑定账号</Button>
                   </div>
                 </div>
 
@@ -68,7 +86,7 @@ export default function SettingsPage() {
                   </div>
                   <div className="flex items-center gap-3">
                     <Badge variant="outline">未绑定</Badge>
-                    <Button variant="outline">绑定账号</Button>
+                    <Button variant="outline" onClick={() => handleBindAccount('智联招聘')}>绑定账号</Button>
                   </div>
                 </div>
 
@@ -86,7 +104,7 @@ export default function SettingsPage() {
                   </div>
                   <div className="flex items-center gap-3">
                     <Badge variant="outline">未绑定</Badge>
-                    <Button variant="outline">绑定账号</Button>
+                    <Button variant="outline" onClick={() => handleBindAccount('猎聘网')}>绑定账号</Button>
                   </div>
                 </div>
               </CardContent>
@@ -106,7 +124,12 @@ export default function SettingsPage() {
                     </p>
                   </div>
                   <label className="relative inline-flex cursor-pointer items-center">
-                    <input type="checkbox" defaultChecked className="peer sr-only" />
+                    <input 
+                      type="checkbox" 
+                      checked={emailNotifications}
+                      onChange={(e) => setEmailNotifications(e.target.checked)}
+                      className="peer sr-only" 
+                    />
                     <div className="peer h-6 w-11 rounded-full bg-secondary after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:bg-background after:transition-all peer-checked:bg-primary peer-checked:after:translate-x-5"></div>
                   </label>
                 </div>
@@ -119,7 +142,12 @@ export default function SettingsPage() {
                     </p>
                   </div>
                   <label className="relative inline-flex cursor-pointer items-center">
-                    <input type="checkbox" defaultChecked className="peer sr-only" />
+                    <input 
+                      type="checkbox" 
+                      checked={weeklyReports}
+                      onChange={(e) => setWeeklyReports(e.target.checked)}
+                      className="peer sr-only" 
+                    />
                     <div className="peer h-6 w-11 rounded-full bg-secondary after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:bg-background after:transition-all peer-checked:bg-primary peer-checked:after:translate-x-5"></div>
                   </label>
                 </div>
@@ -132,7 +160,12 @@ export default function SettingsPage() {
                     </p>
                   </div>
                   <label className="relative inline-flex cursor-pointer items-center">
-                    <input type="checkbox" className="peer sr-only" />
+                    <input 
+                      type="checkbox" 
+                      checked={autoArchive}
+                      onChange={(e) => setAutoArchive(e.target.checked)}
+                      className="peer sr-only" 
+                    />
                     <div className="peer h-6 w-11 rounded-full bg-secondary after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:bg-background after:transition-all peer-checked:bg-primary peer-checked:after:translate-x-5"></div>
                   </label>
                 </div>
@@ -141,7 +174,7 @@ export default function SettingsPage() {
 
             {/* Save Button */}
             <div className="flex justify-end">
-              <Button>保存设置</Button>
+              <Button onClick={handleSaveSettings}>保存设置</Button>
             </div>
           </div>
         </main>

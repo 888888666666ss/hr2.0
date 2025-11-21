@@ -66,6 +66,7 @@ export default function InterviewsPage() {
                 <div className="space-y-4">
                   {[
                     {
+                      id: 1,
                       candidate: '张三',
                       position: '高级前端工程师',
                       type: 'AI 初筛',
@@ -73,6 +74,7 @@ export default function InterviewsPage() {
                       date: '2024-01-20 14:00',
                     },
                     {
+                      id: 2,
                       candidate: '李四',
                       position: '产品经理',
                       type: '现场面试',
@@ -80,6 +82,7 @@ export default function InterviewsPage() {
                       date: '2024-01-22 10:00',
                     },
                     {
+                      id: 3,
                       candidate: '王五',
                       position: 'UI 设计师',
                       type: 'AI 初筛',
@@ -125,8 +128,8 @@ export default function InterviewsPage() {
                             ? '进行中'
                             : '待进行'}
                         </Badge>
-                        <Button variant="outline" size="sm">
-                          查看详情
+                        <Button variant="outline" size="sm" asChild>
+                          <Link href={`/interviews/${interview.id}`}>查看详情</Link>
                         </Button>
                       </div>
                     </div>

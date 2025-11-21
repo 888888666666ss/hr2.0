@@ -77,7 +77,7 @@ function DepartmentTree({ node, level = 0 }: { node: DepartmentNode; level?: num
       <div
         className={cn(
           'group flex items-center gap-3 rounded-lg p-3 hover:bg-accent transition-colors cursor-pointer',
-          level === 0 && 'bg-primary/5'
+          level === 0 ? 'bg-primary/5' : ''
         )}
         style={{ marginLeft: `${level * 24}px` }}
         onClick={() => hasChildren && setIsExpanded(!isExpanded)}

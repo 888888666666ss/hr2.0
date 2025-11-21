@@ -1,3 +1,6 @@
+'use client'
+
+import { useRouter } from 'next/navigation'
 import { Sidebar } from '@/components/sidebar'
 import { PageHeader } from '@/components/page-header'
 import { AIAssistant } from '@/components/ai-assistant'
@@ -8,6 +11,7 @@ import { TrendingUp, Users, Award } from 'lucide-react'
 import Link from 'next/link'
 
 export default function PerformancePage() {
+  const router = useRouter()
   const performanceData = [
     {
       id: 1,
@@ -47,12 +51,16 @@ export default function PerformancePage() {
     },
   ]
 
+  const handleCreatePerformanceReview = () => {
+    router.push('/performance/new')
+  }
+
   return (
     <div className="flex h-screen bg-background">
       <Sidebar />
       <div className="flex flex-1 flex-col overflow-hidden">
         <PageHeader title="绩效管理" description="员工绩效评估和管理">
-          <Button>新建绩效评估</Button>
+          <Button onClick={handleCreatePerformanceReview}>新建绩效评估</Button>
         </PageHeader>
 
         <main className="flex-1 overflow-y-auto p-6">

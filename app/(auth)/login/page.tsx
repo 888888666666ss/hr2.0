@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { Mail, Lock, Key, Eye, EyeOff, Building2, Loader2 } from 'lucide-react'
 import { useAuth } from '@/lib/auth/auth-context'
 
@@ -26,6 +27,7 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false)
   
   const { login } = useAuth()
+  const router = useRouter()
   
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value)
@@ -53,11 +55,15 @@ export default function LoginPage() {
     console.log('邮箱登录信息:', { email, emailPassword, rememberPassword })
     
     try {
+      // 调用真实的 auth context login 方法
       await login(email, emailPassword)
-      // 登录成功后会自动重定向到首页
-      window.location.href = '/'
+      
+      // 登录成功后跳转到主页
+      router.push('/')
+      router.refresh()
     } catch (error) {
       console.error('登录失败:', error)
+      alert('登录失败，请检查邮箱和密码')
     } finally {
       setIsLoading(false)
     }
@@ -69,12 +75,15 @@ export default function LoginPage() {
     console.log('卡号登录信息:', { cardNumber, cardPassword, rememberPassword })
     
     try {
-      // 对于卡号登录，我们使用卡号作为"邮箱"进行登录
+      // 调用真实的 auth context login 方法，使用卡号作为邮箱格式
       await login(cardNumber + '@card.local', cardPassword)
-      // 登录成功后会自动重定向到首页
-      window.location.href = '/'
+      
+      // 登录成功后跳转到主页
+      router.push('/')
+      router.refresh()
     } catch (error) {
       console.error('登录失败:', error)
+      alert('登录失败，请检查卡号和密码')
     } finally {
       setIsLoading(false)
     }

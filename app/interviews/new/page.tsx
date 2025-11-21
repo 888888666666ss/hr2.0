@@ -44,7 +44,9 @@ export default function AIInterviewPage() {
 
       if (messages.length >= 6) {
         setTimeout(() => {
-          router.push('/interviews/1/report')
+          // Generate interview ID - in real app this would come from backend after creating the interview
+          const interviewId = Date.now().toString()
+          router.push(`/interviews/${interviewId}/report`)
         }, 2000)
       }
     }, 1500)

@@ -20,10 +20,9 @@ import {
 interface InterviewQuestionsProps {
   jobId: string
   positionTitle: string
-  onQuestionsGenerated?: (questions: any) => void
 }
 
-export function InterviewQuestions({ jobId, positionTitle, onQuestionsGenerated }: InterviewQuestionsProps) {
+export function InterviewQuestions({ jobId, positionTitle }: InterviewQuestionsProps) {
   const [level, setLevel] = useState('mid')
   const [skillsInput, setSkillsInput] = useState('')
   const [questions, setQuestions] = useState<any>(null)
@@ -58,7 +57,6 @@ export function InterviewQuestions({ jobId, positionTitle, onQuestionsGenerated 
       }
 
       setQuestions(data.questions)
-      onQuestionsGenerated?.(data.questions)
 
     } catch (err: any) {
       setError(err.message || '生成面试问题时出现错误')

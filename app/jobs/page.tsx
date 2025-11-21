@@ -1,3 +1,5 @@
+'use client'
+
 import { Sidebar } from '@/components/sidebar'
 import { PageHeader } from '@/components/page-header'
 import { AIAssistant } from '@/components/ai-assistant'
@@ -6,9 +8,13 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Plus, Search, MoreVertical, Users, Eye } from 'lucide-react'
 import Link from 'next/link'
+import { useState } from 'react'
 
 export default function JobsPage() {
-  const jobs = [
+  const [searchTerm, setSearchTerm] = useState('')
+  const [showFilter, setShowFilter] = useState(false)
+  
+  const allJobs = [
     {
       id: 1,
       title: '高级前端工程师',
@@ -55,6 +61,21 @@ export default function JobsPage() {
     },
   ]
 
+  const filteredJobs = allJobs.filter(job =>
+    job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    job.department.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    job.location.toLowerCase().includes(searchTerm.toLowerCase())
+  )
+
+  const handleFilter = () => {
+    setShowFilter(!showFilter)
+    alert('筛选条件功能将在此处实现')
+  }
+
+  const handleMoreOptions = (jobId: number) => {
+    alert(`岗位 ${jobId} 的更多选项功能将在此处实现`)
+  }
+
   return (
     <div className="flex h-screen bg-background">
       <Sidebar />
@@ -79,16 +100,18 @@ export default function JobsPage() {
                     type="text"
                     placeholder="搜索岗位名称、部门..."
                     className="w-full rounded-lg border border-input bg-background py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </div>
-                <Button variant="outline">筛选条件</Button>
+                <Button variant="outline" onClick={handleFilter}>筛选条件</Button>
               </div>
             </CardContent>
           </Card>
 
           {/* Jobs List */}
           <div className="space-y-4">
-            {jobs.map((job) => (
+            {filteredJobs.map((job) => (
               <Card key={job.id} className="hover:shadow-md transition-shadow">
                 <CardContent className="p-6">
                   <div className="flex items-start justify-between">
@@ -131,7 +154,7 @@ export default function JobsPage() {
                       <Button variant="outline" size="sm" asChild>
                         <Link href={`/jobs/${job.id}`}>查看详情</Link>
                       </Button>
-                      <Button variant="ghost" size="sm">
+                      <Button variant="ghost" size="sm" onClick={() => handleMoreOptions(job.id)}>
                         <MoreVertical className="h-4 w-4" />
                       </Button>
                     </div>

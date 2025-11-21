@@ -68,34 +68,38 @@ export default function CandidatesPage() {
                   <CardContent className="space-y-3">
                     {stage.name === '技术面试' ? (
                       <div className="space-y-3">
-                        <div className="rounded-lg border border-border bg-card p-3">
-                          <div className="mb-2 flex items-start justify-between">
-                            <div className="flex items-center gap-2">
-                              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-xs font-medium text-primary-foreground">
-                                张
+                        {candidates
+                          .filter(candidate => candidate.stage === '技术面试')
+                          .map((candidate) => (
+                            <div key={candidate.id} className="rounded-lg border border-border bg-card p-3">
+                              <div className="mb-2 flex items-start justify-between">
+                                <div className="flex items-center gap-2">
+                                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-xs font-medium text-primary-foreground">
+                                    {candidate.avatar}
+                                  </div>
+                                  <div>
+                                    <p className="text-sm font-medium text-foreground">
+                                      {candidate.name}
+                                    </p>
+                                    <p className="text-xs text-muted-foreground">
+                                      {candidate.position}
+                                    </p>
+                                  </div>
+                                </div>
+                                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
+                                  {candidate.score}
+                                </div>
                               </div>
-                              <div>
-                                <p className="text-sm font-medium text-foreground">
-                                  张三
-                                </p>
-                                <p className="text-xs text-muted-foreground">
-                                  高级前端工程师
-                                </p>
-                              </div>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="w-full"
+                                asChild
+                              >
+                                <Link href={`/candidates/${candidate.id}`}>查看详情</Link>
+                              </Button>
                             </div>
-                            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
-                              92
-                            </div>
-                          </div>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="w-full"
-                            asChild
-                          >
-                            <Link href="/candidates/1">查看详情</Link>
-                          </Button>
-                        </div>
+                          ))}
                       </div>
                     ) : (
                       <div className="py-2 text-center text-sm text-muted-foreground">

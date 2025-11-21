@@ -25,6 +25,20 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 
+interface Position {
+  id: number
+  title: string
+  department: string
+  status: string
+  openPositions: number
+  applicants: number
+  description: string
+  requirements: string
+  salary: string
+  location: string
+  publishedAt: string
+}
+
 const mockPositions = [
   {
     id: 1,
@@ -72,6 +86,9 @@ export default function PositionsPage() {
   const [statusFilter, setStatusFilter] = useState('all')
   const [isCreateOpen, setIsCreateOpen] = useState(false)
   const [isGeneratingJD, setIsGeneratingJD] = useState(false)
+  const [selectedPosition, setSelectedPosition] = useState<Position | null>(null)
+  const [isViewOpen, setIsViewOpen] = useState(false)
+  const [isEditOpen, setIsEditOpen] = useState(false)
 
   const filteredPositions = mockPositions.filter(pos => {
     const matchesSearch = pos.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -86,6 +103,20 @@ export default function PositionsPage() {
       setIsGeneratingJD(false)
       // AI生成JD内容会填充到表单中
     }, 2000)
+  }
+
+  const handleViewDetails = (position: Position) => {
+    setSelectedPosition(position)
+    setIsViewOpen(true)
+  }
+
+  const handleEdit = (position: Position) => {
+    setSelectedPosition(position)
+    setIsEditOpen(true)
+  }
+
+  const handlePublishToChannels = (position: Position) => {
+    alert(`正在将"${position.title}"发布到招聘渠道：\n- 智联招聘\n- Boss直聘\n- 拉勾网\n\n发布功能将在此处实现`)
   }
 
   return (
@@ -161,18 +192,33 @@ export default function PositionsPage() {
                 </div>
 
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm" className="flex-1">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="flex-1"
+                    onClick={() => handleViewDetails(position)}
+                  >
                     <Eye className="mr-1.5 h-3.5 w-3.5" />
                     查看详情
                   </Button>
-                  <Button variant="outline" size="sm" className="flex-1">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="flex-1"
+                    onClick={() => handleEdit(position)}
+                  >
                     <Edit className="mr-1.5 h-3.5 w-3.5" />
                     编辑
                   </Button>
                 </div>
 
                 {position.status === 'active' && (
-                  <Button variant="secondary" size="sm" className="w-full">
+                  <Button 
+                    variant="secondary" 
+                    size="sm" 
+                    className="w-full"
+                    onClick={() => handlePublishToChannels(position)}
+                  >
                     <ExternalLink className="mr-1.5 h-3.5 w-3.5" />
                     发布到渠道
                   </Button>
@@ -258,6 +304,148 @@ export default function PositionsPage() {
               取消
             </Button>
             <Button>创建岗位</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* View Position Dialog */}
+      <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>岗位详情</DialogTitle>
+            <DialogDescription>查看岗位的详细信息</DialogDescription>
+          </DialogHeader>
+          {selectedPosition && (
+            <div className="space-y-4 py-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>岗位名称</Label>
+                  <div className="text-sm font-medium">{selectedPosition.title}</div>
+                </div>
+                <div className="space-y-2">
+                  <Label>所属部门</Label>
+                  <div className="text-sm font-medium">{selectedPosition.department}</div>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>薪资范围</Label>
+                  <div className="text-sm font-medium">{selectedPosition.salary}</div>
+                </div>
+                <div className="space-y-2">
+                  <Label>工作地点</Label>
+                  <div className="text-sm font-medium">{selectedPosition.location}</div>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>岗位状态</Label>
+                  <Badge variant={selectedPosition.status === 'active' ? 'default' : 'secondary'}>
+                    {selectedPosition.status === 'active' ? '招聘中' : '已关闭'}
+                  </Badge>
+                </div>
+                <div className="space-y-2">
+                  <Label>发布时间</Label>
+                  <div className="text-sm font-medium">{selectedPosition.publishedAt}</div>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label>职位描述</Label>
+                <div className="text-sm p-3 bg-muted rounded-lg">{selectedPosition.description}</div>
+              </div>
+              <div className="space-y-2">
+                <Label>任职要求</Label>
+                <div className="text-sm p-3 bg-muted rounded-lg whitespace-pre-line">{selectedPosition.requirements}</div>
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsViewOpen(false)}>
+              关闭
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Position Dialog */}
+      <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>编辑岗位</DialogTitle>
+            <DialogDescription>修改岗位信息和要求</DialogDescription>
+          </DialogHeader>
+          {selectedPosition && (
+            <div className="space-y-4 py-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="edit-title">岗位名称 *</Label>
+                  <Input id="edit-title" defaultValue={selectedPosition.title} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="edit-department">所属部门 *</Label>
+                  <Select defaultValue={selectedPosition.department}>
+                    <SelectTrigger id="edit-department">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="技术部">技术部</SelectItem>
+                      <SelectItem value="产品部">产品部</SelectItem>
+                      <SelectItem value="设计部">设计部</SelectItem>
+                      <SelectItem value="销售部">销售部</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="edit-salary">薪资范围</Label>
+                  <Input id="edit-salary" defaultValue={selectedPosition.salary} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="edit-location">工作地点</Label>
+                  <Input id="edit-location" defaultValue={selectedPosition.location} />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-status">岗位状态</Label>
+                <Select defaultValue={selectedPosition.status}>
+                  <SelectTrigger id="edit-status">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="active">招聘中</SelectItem>
+                    <SelectItem value="closed">已关闭</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-description">职位描述</Label>
+                <Textarea
+                  id="edit-description"
+                  defaultValue={selectedPosition.description}
+                  rows={4}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-requirements">任职要求</Label>
+                <Textarea
+                  id="edit-requirements"
+                  defaultValue={selectedPosition.requirements}
+                  rows={4}
+                />
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsEditOpen(false)}>
+              取消
+            </Button>
+            <Button onClick={() => {
+              alert('岗位信息已保存')
+              setIsEditOpen(false)
+            }}>
+              保存修改
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

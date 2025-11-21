@@ -16,7 +16,9 @@ export default function UploadResumePage() {
   const handleUpload = () => {
     // Simulate upload
     alert('简历上传成功！正在进行 AI 分析...')
-    router.push('/resumes/1/analysis')
+    // Generate resume ID - in real app this would come from backend after creating the resume
+    const resumeId = Date.now().toString()
+    router.push(`/resumes/${resumeId}/analysis`)
   }
 
   return (

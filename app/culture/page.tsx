@@ -1,8 +1,10 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import { PageHeader } from '@/components/page-header'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Heart, Users, Trophy, Coffee } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Heart, Users, Trophy, Coffee, Eye } from 'lucide-react'
 
 const cultureItems = [
   {
@@ -33,18 +35,21 @@ const cultureItems = [
 
 const events = [
   {
+    id: 1,
     title: '2024年会盛典',
     date: '2024-02-01',
     image: '/company-annual-meeting.jpg',
     description: '精彩的年会表演和抽奖活动',
   },
   {
+    id: 2,
     title: '团队建设活动',
     date: '2023-12-15',
     image: '/team-building-outdoor.jpg',
     description: '户外拓展训练，增强团队凝聚力',
   },
   {
+    id: 3,
     title: '技术分享会',
     date: '2023-11-20',
     image: '/tech-conference-presentation.png',
@@ -53,6 +58,12 @@ const events = [
 ]
 
 export default function CulturePage() {
+  const router = useRouter()
+
+  const handleViewEvent = (eventId: number) => {
+    router.push(`/culture/${eventId}`)
+  }
+
   return (
     <div className="flex min-h-screen flex-col">
       <PageHeader
@@ -93,8 +104,18 @@ export default function CulturePage() {
                   className="w-full h-48 object-cover"
                 />
                 <CardContent className="p-6">
-                  <div className="space-y-2">
-                    <h3 className="text-lg font-semibold">{event.title}</h3>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-lg font-semibold">{event.title}</h3>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => handleViewEvent(event.id)}
+                      >
+                        <Eye className="mr-1.5 h-3.5 w-3.5" />
+                        查看详情
+                      </Button>
+                    </div>
                     <p className="text-sm text-muted-foreground">{event.date}</p>
                     <p className="text-sm leading-relaxed">{event.description}</p>
                   </div>

@@ -1,33 +1,57 @@
 import { createClient } from '@supabase/supabase-js'
 import type { Database } from './types'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
+const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || ''
 
-if (!supabaseUrl) {
-  throw new Error('Missing env.NEXT_PUBLIC_SUPABASE_URL')
-}
+// 在构建时和运行时的处理
+let supabaseAdmin: any = null
 
-if (!supabaseServiceRoleKey) {
-  throw new Error('Missing env.SUPABASE_SERVICE_ROLE_KEY')
-}
-
-// 服务端客户端 - 拥有管理员权限，绕过 RLS
-export const supabaseAdmin = createClient<Database>(
-  supabaseUrl,
-  supabaseServiceRoleKey,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false
+if (supabaseUrl && supabaseServiceRoleKey) {
+  // 服务端客户端 - 拥有管理员权限，绕过 RLS
+  supabaseAdmin = createClient<Database>(
+    supabaseUrl,
+    supabaseServiceRoleKey,
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
     }
+  )
+} else {
+  console.warn('⚠️ Supabase server configuration not found. Database operations will use mock mode.')
+  
+  // 创建一个模拟的 supabase admin 客户端
+  supabaseAdmin = {
+    from: () => ({
+      select: () => ({
+        eq: () => ({
+          single: async () => ({ data: null, error: new Error('Supabase not configured') })
+        }),
+        insert: async () => ({ data: null, error: new Error('Supabase not configured') }),
+        update: async () => ({ data: null, error: new Error('Supabase not configured') }),
+        delete: async () => ({ error: new Error('Supabase not configured') })
+      }),
+      insert: () => ({
+        select: () => ({
+          single: async () => ({ data: null, error: new Error('Supabase not configured') })
+        })
+      })
+    })
   }
-)
+}
+
+export { supabaseAdmin }
 
 // 服务端辅助函数
 export const serverHelpers = {
   // 获取用户的公司信息
   getUserCompany: async (userId: string) => {
+    if (!supabaseUrl || !supabaseServiceRoleKey) {
+      throw new Error('Supabase not configured')
+    }
+
     const { data, error } = await supabaseAdmin
       .from('users')
       .select('company_id, companies(*)')
@@ -40,6 +64,10 @@ export const serverHelpers = {
 
   // 检查用户权限
   checkUserPermission: async (userId: string, permission: string) => {
+    if (!supabaseUrl || !supabaseServiceRoleKey) {
+      return false
+    }
+
     const { data, error } = await supabaseAdmin
       .from('users')
       .select(`
@@ -74,6 +102,11 @@ export const serverHelpers = {
     ipAddress?: string,
     userAgent?: string
   ) => {
+    if (!supabaseUrl || !supabaseServiceRoleKey) {
+      console.warn('Supabase not configured, skipping system log')
+      return null
+    }
+
     const { data, error } = await supabaseAdmin
       .from('system_logs')
       .insert({
@@ -102,6 +135,11 @@ export const serverHelpers = {
     actionUrl?: string,
     metadata: any = {}
   ) => {
+    if (!supabaseUrl || !supabaseServiceRoleKey) {
+      console.warn('Supabase not configured, skipping notification')
+      return null
+    }
+
     const { data, error } = await supabaseAdmin
       .from('notifications')
       .insert({

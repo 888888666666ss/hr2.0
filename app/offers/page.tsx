@@ -1,3 +1,6 @@
+'use client'
+
+import { useRouter } from 'next/navigation'
 import { Sidebar } from '@/components/sidebar'
 import { PageHeader } from '@/components/page-header'
 import { AIAssistant } from '@/components/ai-assistant'
@@ -7,18 +10,29 @@ import { Badge } from '@/components/ui/badge'
 import { FileText } from 'lucide-react'
 
 export default function OffersPage() {
+  const router = useRouter()
+
+  const handleCreateOffer = () => {
+    router.push('/offers/new')
+  }
+
+  const handleViewOffer = (offerId: number) => {
+    router.push(`/offers/${offerId}`)
+  }
+
   return (
     <div className="flex h-screen bg-background">
       <Sidebar />
       <div className="flex flex-1 flex-col overflow-hidden">
         <PageHeader title="Offer 管理" description="生成和管理录用通知">
-          <Button>生成 Offer</Button>
+          <Button onClick={handleCreateOffer}>生成 Offer</Button>
         </PageHeader>
 
         <main className="flex-1 overflow-y-auto p-6">
           <div className="space-y-4">
             {[
               {
+                id: 1,
                 candidate: '张三',
                 position: '高级前端工程师',
                 salary: '25k-40k',
@@ -26,14 +40,15 @@ export default function OffersPage() {
                 date: '2024-01-20',
               },
               {
+                id: 2,
                 candidate: '李四',
                 position: '产品经理',
                 salary: '20k-30k',
                 status: 'accepted',
                 date: '2024-01-18',
               },
-            ].map((offer, index) => (
-              <Card key={index}>
+            ].map((offer) => (
+              <Card key={offer.id}>
                 <CardContent className="flex items-center justify-between p-6">
                   <div className="flex items-center gap-4">
                     <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-secondary">
@@ -56,7 +71,7 @@ export default function OffersPage() {
                     >
                       {offer.status === 'sent' ? '已发送' : '已接受'}
                     </Badge>
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" onClick={() => handleViewOffer(offer.id)}>
                       查看详情
                     </Button>
                   </div>

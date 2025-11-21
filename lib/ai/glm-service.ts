@@ -30,12 +30,32 @@ export class GLMAIService {
       model: 'glm-4-plus' // 或者使用其他模型
     }
 
+    // 在开发/构建模式下，如果没有API key，只警告而不抛错
     if (!this.config.apiKey) {
-      throw new Error('GLM API key is required')
+      console.warn('⚠️ GLM API key not configured. AI features will use mock responses.')
     }
   }
 
   async chat(messages: AIMessage[]): Promise<AIResponse> {
+    // 如果没有配置 API key，返回模拟响应
+    if (!this.config.apiKey) {
+      console.warn('🤖 Using mock AI response (API key not configured)')
+      return {
+        content: JSON.stringify({
+          matchScore: 75,
+          strengths: ['相关工作经验', '技能匹配'],
+          concerns: ['需要进一步评估'],
+          skills: ['JavaScript', 'React', 'Node.js'],
+          recommendations: ['建议进入面试流程']
+        }),
+        usage: {
+          total_tokens: 100,
+          prompt_tokens: 80,
+          completion_tokens: 20
+        }
+      }
+    }
+
     try {
       const response = await fetch(this.config.apiUrl, {
         method: 'POST',

@@ -8,14 +8,15 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { MapPin, Calendar, Users, DollarSign, CheckCircle, XCircle, Clock, Sparkles } from 'lucide-react'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, use } from 'react'
 
-export default function JobReqDetailPage({ params }: { params: { id: string } }) {
+export default function JobReqDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params)
   const [showPublishModal, setShowPublishModal] = useState(false)
   const [showAIMatch, setShowAIMatch] = useState(false)
 
   const jobReq = {
-    id: params.id,
+    id: id,
     title: '高级前端工程师',
     department: '技术部',
     location: '北京',

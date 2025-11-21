@@ -19,20 +19,40 @@ export default function JobReqsPage() {
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [statusFilter, setStatusFilter] = useState<string>('')
+  const [searchTerm, setSearchTerm] = useState<string>('')
 
   useEffect(() => {
     loadJobReqs()
-  }, [statusFilter])
+  }, [statusFilter, searchTerm])
 
   const loadJobReqs = async () => {
     try {
       setLoading(true)
       const data = await getJobReqs(statusFilter || undefined)
-      setJobReqs(data)
+      
+      // Apply search filter
+      let filteredData = data
+      if (searchTerm) {
+        filteredData = data.filter(req => 
+          req.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          req.department.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          req.hiring_manager.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+      }
+      
+      setJobReqs(filteredData)
     } catch (error) {
       console.error('Failed to load job requisitions:', error)
       // Fallback to mock data if API fails
-      setJobReqs(getMockData())
+      let mockData = getMockData()
+      if (searchTerm) {
+        mockData = mockData.filter(req => 
+          req.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          req.department.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          req.hiring_manager.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+      }
+      setJobReqs(mockData)
     } finally {
       setLoading(false)
     }
@@ -105,12 +125,36 @@ export default function JobReqsPage() {
     )
   }
 
+  const handleExport = () => {
+    alert('正在导出岗位需求数据...\n功能开发中')
+  }
+
+  const handleMoreFilter = () => {
+    alert('高级筛选功能开发中...\n将支持按部门、状态、日期等多维度筛选')
+  }
+
+  const handleBatchPublish = () => {
+    alert(`正在批量发布 ${selectedReqs.length} 个岗位需求...\n功能开发中`)
+  }
+
+  const handleBatchClose = () => {
+    alert(`正在批量关闭 ${selectedReqs.length} 个岗位需求...\n功能开发中`)
+  }
+
+  const handleApproval = (reqId: number) => {
+    alert(`正在处理岗位需求 ${reqId} 的审批...\n功能开发中`)
+  }
+
+  const handleMoreOptions = (reqId: number) => {
+    alert(`岗位需求 ${reqId} 的更多操作：\n- 复制需求\n- 暂停招聘\n- 删除需求\n功能开发中`)
+  }
+
   return (
     <div className="flex h-screen bg-background">
       <Sidebar />
       <div className="flex flex-1 flex-col overflow-hidden">
         <PageHeader title="岗位需求" description="管理招聘需求和审批流程">
-          <Button variant="outline" className="gap-2">
+          <Button variant="outline" className="gap-2" onClick={handleExport}>
             <Download className="h-4 w-4" />
             导出
           </Button>
@@ -131,6 +175,8 @@ export default function JobReqsPage() {
                     type="text"
                     placeholder="搜索岗位标题、部门、地点..."
                     className="h-10 w-full rounded-lg border border-input bg-background pl-10 pr-4 text-sm transition-colors focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/20"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </div>
                 <select 
@@ -144,7 +190,7 @@ export default function JobReqsPage() {
                   <option value="Draft">Draft</option>
                   <option value="Closed">Closed</option>
                 </select>
-                <Button variant="outline" className="gap-2">
+                <Button variant="outline" className="gap-2" onClick={handleMoreFilter}>
                   <Filter className="h-4 w-4" />
                   更多筛选
                 </Button>
@@ -156,8 +202,8 @@ export default function JobReqsPage() {
                     已选择 {selectedReqs.length} 项
                   </span>
                   <div className="flex gap-2">
-                    <Button size="sm" variant="outline">批量发布</Button>
-                    <Button size="sm" variant="outline">批量关闭</Button>
+                    <Button size="sm" variant="outline" onClick={handleBatchPublish}>批量发布</Button>
+                    <Button size="sm" variant="outline" onClick={handleBatchClose}>批量关闭</Button>
                     <Button size="sm" variant="ghost" onClick={() => setSelectedReqs([])}>
                       取消选择
                     </Button>
@@ -249,9 +295,9 @@ export default function JobReqsPage() {
                               <Link href={`/job-reqs/${req.id}`}>查看</Link>
                             </Button>
                             {req.status === 'Pending Approval' && (
-                              <Button variant="outline" size="sm">审批</Button>
+                              <Button variant="outline" size="sm" onClick={() => handleApproval(req.id)}>审批</Button>
                             )}
-                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => handleMoreOptions(req.id)}>
                               <MoreVertical className="h-4 w-4" />
                             </Button>
                           </div>

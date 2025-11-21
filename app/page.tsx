@@ -1,3 +1,5 @@
+'use client'
+
 import { Sidebar } from '@/components/sidebar'
 import { PageHeader } from '@/components/page-header'
 import { AIAssistant } from '@/components/ai-assistant'

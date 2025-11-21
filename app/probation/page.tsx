@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { PageHeader } from '@/components/page-header'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -55,6 +56,7 @@ const mockProbations = [
 ]
 
 export default function ProbationPage() {
+  const router = useRouter()
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
 
@@ -63,6 +65,10 @@ export default function ProbationPage() {
     const matchesStatus = statusFilter === 'all' || prob.status === statusFilter
     return matchesSearch && matchesStatus
   })
+
+  const handleViewProbation = (probationId: number) => {
+    router.push(`/probation/${probationId}`)
+  }
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -185,12 +191,12 @@ export default function ProbationPage() {
                     </div>
 
                     <div className="flex gap-2">
-                      <Button variant="outline" size="sm">
+                      <Button variant="outline" size="sm" onClick={() => handleViewProbation(probation.id)}>
                         <Eye className="mr-1.5 h-3.5 w-3.5" />
                         查看详情
                       </Button>
                       {probation.daysLeft <= 0 && (
-                        <Button size="sm">
+                        <Button size="sm" onClick={() => alert(`提交 ${probation.name} 的转正申请...\n功能开发中`)}>
                           <CheckCircle className="mr-1.5 h-3.5 w-3.5" />
                           提交转正
                         </Button>

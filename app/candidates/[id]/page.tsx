@@ -1,3 +1,6 @@
+'use client'
+
+import { useRouter } from 'next/navigation'
 import { Sidebar } from '@/components/sidebar'
 import { PageHeader } from '@/components/page-header'
 import { AIAssistant } from '@/components/ai-assistant'
@@ -8,13 +11,25 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ResumeAnalysis } from '@/components/ai/resume-analysis'
 import { InterviewQuestions } from '@/components/ai/interview-questions'
 import { Mail, Phone, MapPin, Sparkles, Brain, MessageSquare } from 'lucide-react'
+import { use } from 'react'
 
-export default function CandidateDetailPage() {
+export default function CandidateDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params)
+  const router = useRouter()
+
+  const handleAnalysisComplete = (analysis: any) => {
+    console.log('Analysis:', analysis)
+  }
+
+  const handleQuestionsGenerated = (questions: any) => {
+    console.log('Questions:', questions)
+  }
+
   return (
     <div className="flex h-screen bg-background">
       <Sidebar />
       <div className="flex flex-1 flex-col overflow-hidden">
-        <PageHeader title="候选人详情" description="张三 - 高级前端工程师">
+        <PageHeader title="候选人详情" description={`候选人 ID: ${id} - 张三 - 高级前端工程师`}>
           <Button variant="outline">发送消息</Button>
           <Button>推进流程</Button>
         </PageHeader>
@@ -146,9 +161,8 @@ export default function CandidateDetailPage() {
 
                   <TabsContent value="ai-analysis">
                     <ResumeAnalysis
-                      candidateId="1"
+                      candidateId={id}
                       jobId="1"
-                      onAnalysisComplete={(analysis) => console.log('Analysis:', analysis)}
                     />
                   </TabsContent>
 
@@ -156,7 +170,6 @@ export default function CandidateDetailPage() {
                     <InterviewQuestions
                       jobId="1"
                       positionTitle="高级前端工程师"
-                      onQuestionsGenerated={(questions) => console.log('Questions:', questions)}
                     />
                   </TabsContent>
                 </Tabs>
@@ -213,13 +226,13 @@ export default function CandidateDetailPage() {
                     <CardTitle>快速操作</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-2">
-                    <Button className="w-full" variant="outline">
+                    <Button className="w-full" variant="outline" onClick={() => router.push(`/resumes/${id}`)}>
                       查看完整简历
                     </Button>
-                    <Button className="w-full" variant="outline">
+                    <Button className="w-full" variant="outline" onClick={() => router.push(`/interviews/${id}`)}>
                       查看面试记录
                     </Button>
-                    <Button className="w-full" variant="outline">
+                    <Button className="w-full" variant="outline" onClick={() => router.push(`/offers/new?candidateId=${id}`)}>
                       生成 Offer
                     </Button>
                   </CardContent>

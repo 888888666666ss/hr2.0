@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -10,6 +11,7 @@ import { Building2, Loader2 } from 'lucide-react'
 
 export default function ResetPasswordPage() {
   const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -17,7 +19,7 @@ export default function ResetPasswordPage() {
     // Simulate API call
     setTimeout(() => {
       setIsLoading(false)
-      window.location.href = '/login'
+      router.push('/login')
     }, 1000)
   }
 

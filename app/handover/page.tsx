@@ -101,7 +101,7 @@ export default function HandoverPage() {
                         <div className="flex-1">
                           <div className={cn(
                             'font-medium',
-                            item.status === 'completed' && 'text-muted-foreground line-through'
+                            item.status === 'completed' ? 'text-muted-foreground line-through' : ''
                           )}>
                             {item.task}
                           </div>

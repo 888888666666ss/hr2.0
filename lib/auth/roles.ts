@@ -1,4 +1,4 @@
-export type UserRole = 'super_admin' | 'hr_admin' | 'recruiter' | 'hiring_manager' | 'employee' | 'finance'
+export type UserRole = 'super_admin' | 'hr_admin' | 'recruiter' | 'hiring_manager' | 'employee' | 'finance' | 'salary_admin'
 
 export interface User {
   id: string
@@ -42,6 +42,11 @@ export const roleConfig: Record<UserRole, {
     label: 'Finance',
     description: 'Payroll and financial management',
     dashboardPath: '/finance/dashboard',
+  },
+  salary_admin: {
+    label: 'Salary Admin',
+    description: 'Salary and compensation management',
+    dashboardPath: '/salary/dashboard',
   },
 }
 
@@ -115,11 +120,37 @@ export const navigationByRole: Record<UserRole, string[]> = {
     'contracts',
     'analytics',
   ],
+  salary_admin: [
+    'dashboard',
+    'employees',
+    'salary',
+    'analytics',
+  ],
 }
 
 // Check if user has access to a specific page
 export function hasAccess(userRole: UserRole, page: string): boolean {
   return navigationByRole[userRole]?.includes(page) ?? false
+}
+
+// Check if user can access salary data
+export function canAccessSalary(userRole: UserRole, requestedUserId?: string, currentUserId?: string): boolean {
+  // Salary admins can access all salary data
+  if (userRole === 'salary_admin' || userRole === 'super_admin' || userRole === 'finance') {
+    return true
+  }
+  
+  // Employees can only access their own salary data
+  if (userRole === 'employee' && requestedUserId && currentUserId) {
+    return requestedUserId === currentUserId
+  }
+  
+  return false
+}
+
+// Check if user can manage salary data (add/edit/delete)
+export function canManageSalary(userRole: UserRole): boolean {
+  return ['salary_admin', 'super_admin', 'finance'].includes(userRole)
 }
 
 // Mock current user - in real app, this would come from auth context
