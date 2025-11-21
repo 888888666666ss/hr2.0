@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import { supabase } from '@/lib/supabase/client'
-import type { User as SupabaseUser } from '@supabase/supabase-js'
+import type { User as SupabaseUser, AuthChangeEvent, Session } from '@supabase/supabase-js'
 import type { User, UserRole } from './roles'
 
 interface AuthContextType {
@@ -61,7 +61,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // 监听认证状态变化
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      async (event: AuthChangeEvent, session: Session | null) => {
         if (event === 'SIGNED_IN' && session?.user) {
           const appUser: User = {
             id: session.user.id,
@@ -130,7 +130,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       id: 'mock-user-' + Date.now(),
       name: email.split('@')[0] || '测试用户',
       email: email,
-      role: 'admin' // 默认给管理员权限方便测试
+      role: 'hr_admin' // 默认给HR管理员权限方便测试
     }
     
     // 设置用户状态
@@ -180,7 +180,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (user.id.startsWith('mock-') === false) {
         supabase.auth.updateUser({
           data: { role }
-        }).catch(error => {
+        }).catch((error: any) => {
           console.error('Failed to update user role in Supabase:', error)
         })
       } else {

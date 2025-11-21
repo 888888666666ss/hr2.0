@@ -85,7 +85,7 @@ export const serverHelpers = {
     if (error) throw error
     
     const userPermissions = data.roles?.role_permissions?.map(
-      rp => rp.permissions?.name
+      (rp: any) => rp.permissions?.name
     ) || []
     
     return userPermissions.includes(permission)
